@@ -1,4 +1,5 @@
 MAD-Project-food_delivery_app
+
 "Your favorite meals, delivered fast and fresh - because good food shouldn't keep you waiting."
 Our Food Delivery App connects users with nearby restaurants, allowing them to browse menus, customize orders, and track deliveries in real time. It ensures fast, secure, and convenient food ordering with online payments and smooth delivery tracking for a better dining experience.
 
