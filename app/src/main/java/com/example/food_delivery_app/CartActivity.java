@@ -215,7 +215,7 @@ public class CartActivity extends AppCompatActivity {
         String estimatedTime = sdf.format(calendar.getTime()) + " (15min)";
         intent.putExtra("ESTIMATED_TIME", estimatedTime);
 
-        // Add default driver info
+        
         intent.putExtra("DRIVER_NAME", "Abebe Kebede");
         intent.putExtra("DRIVER_PHONE", "+251911223344");
         intent.putExtra("VEHICLE", "Dodai Model T6+ [electric]");
