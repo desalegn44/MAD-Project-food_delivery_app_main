@@ -11,23 +11,39 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
 import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RestaurantListActivity
+ * ----------------------
+ * This activity displays all available restaurants.
+ * Users can:
+ *  - Search restaurants by name or tag
+ *  - Filter restaurants by category
+ *  - Select a restaurant to view its menu
+ */
 public class RestaurantListActivity extends AppCompatActivity {
 
+    // Search input field
     private TextInputEditText searchInput;
+
+    // Container layout for restaurant cards
     private LinearLayout restaurantsContainer;
+
+    // List holding restaurant card references for filtering
     private List<RestaurantCard> restaurantCards = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_list);
-
 
         // Initialize back button
         ImageButton backButton = findViewById(R.id.backButton);
@@ -39,25 +55,30 @@ public class RestaurantListActivity extends AppCompatActivity {
         searchInput = findViewById(R.id.searchInput);
         restaurantsContainer = findViewById(R.id.restaurantsLayout);
 
-        // Note: You need to change the restaurantsContainer reference
-        // Since your layout doesn't have a restaurantsLayout LinearLayout,
-        // you'll need to manage restaurant visibility differently.
-        // For now, I'll show you how to filter by hiding/showing CardViews
+        /*
+         * NOTE:
+         * Restaurants are filtered by hiding/showing CardViews
+         * instead of dynamically adding or removing views.
+         */
 
         // Setup search functionality
         setupSearch();
 
-        // Setup restaurant buttons
+        // Setup restaurant button click actions
         setupRestaurantButtons();
 
-        // Setup category filters
+        // Setup food category filters
         setupCategoryFilters();
 
-        // Initialize restaurant cards list
+        // Initialize restaurant data list
         initializeRestaurantCards();
     }
 
+    /**
+     * Initializes restaurant card data
+     */
     private void initializeRestaurantCards() {
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnSunny),
                 findViewById(R.id.tvSunnyName),
@@ -65,6 +86,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "sunny",
                 "Pizza,Burger"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnRome),
                 findViewById(R.id.tvRomeName),
@@ -72,6 +94,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "rome",
                 "Chicken,Pizza,Burger"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnHTown),
                 findViewById(R.id.tvHTownName),
@@ -79,6 +102,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "htown",
                 "Burger"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnVenezia),
                 findViewById(R.id.tvVeneziaName),
@@ -86,6 +110,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "venezia",
                 "Italian,Pasta"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnTokyo),
                 findViewById(R.id.tvTokyoName),
@@ -93,6 +118,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "tokyo",
                 "Sushi,Japanese"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnNapoli),
                 findViewById(R.id.tvNapoliName),
@@ -100,6 +126,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 "napoli",
                 "Pizza,Italian"
         ));
+
         restaurantCards.add(new RestaurantCard(
                 findViewById(R.id.btnJuice),
                 findViewById(R.id.tvJuiceName),
@@ -109,9 +136,13 @@ public class RestaurantListActivity extends AppCompatActivity {
         ));
     }
 
+    /**
+     * Sets up search bar functionality
+     */
     private void setupSearch() {
         if (searchInput != null) {
-            // Real-time search filtering
+
+            // Real-time text filtering
             searchInput.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -125,29 +156,31 @@ public class RestaurantListActivity extends AppCompatActivity {
                 public void afterTextChanged(Editable s) {}
             });
 
-            // Handle search when pressing enter/action button
+            // Handle keyboard search action
             searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
                     String query = v.getText().toString().trim();
+
                     if (!TextUtils.isEmpty(query)) {
-                        // Navigate to search results activity
+                        // Navigate to full search results screen
                         navigateToSearchResults(query);
                     }
                     return true;
                 }
             });
 
-            // Add a clear button functionality
-            searchInput.setOnTouchListener((v, event) -> {
-                // You can add clear functionality here if needed
-                return false;
-            });
+            // Optional clear functionality placeholder
+            searchInput.setOnTouchListener((v, event) -> false);
         }
     }
 
+    /**
+     * Sets click listeners for restaurant buttons
+     */
     private void setupRestaurantButtons() {
-        // Setup buttons for each restaurant
+
         setupButton(R.id.btnSunny, "Sunny Burger and Pizza", "sunny");
         setupButton(R.id.btnRome, "Rome 1960 Chicken, Pizza and Burger", "rome");
         setupButton(R.id.btnHTown, "H Town Burger", "htown");
@@ -157,8 +190,10 @@ public class RestaurantListActivity extends AppCompatActivity {
         setupButton(R.id.btnJuice, "Fresh Juice Bar", "juice");
     }
 
+    /**
+     * Initializes category filter buttons
+     */
     private void setupCategoryFilters() {
-        // Setup category click listeners
         setupCategory(R.id.categoryPizza, "Pizza");
         setupCategory(R.id.categoryBurger, "Burger");
         setupCategory(R.id.categoryDrinks, "Drinks");
@@ -166,21 +201,33 @@ public class RestaurantListActivity extends AppCompatActivity {
         setupCategory(R.id.categoryDessert, "Dessert");
     }
 
+    /**
+     * Sets click behavior for each category
+     */
     private void setupCategory(int categoryId, String category) {
+
         TextView categoryView = findViewById(categoryId);
+
         if (categoryView != null) {
             categoryView.setOnClickListener(v -> {
-                // Highlight selected category
+
+                // Reset all category styles
                 resetCategoryBackgrounds();
+
+                // Highlight selected category
                 categoryView.setBackgroundResource(R.drawable.category_bg_selected);
 
-                // Filter restaurants by category
+                // Filter restaurants
                 filterByCategory(category);
             });
         }
     }
 
+    /**
+     * Resets all category backgrounds to default
+     */
     private void resetCategoryBackgrounds() {
+
         int[] categoryIds = {
                 R.id.categoryPizza,
                 R.id.categoryBurger,
@@ -197,10 +244,17 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets navigation for restaurant selection
+     */
     private void setupButton(int buttonId, String restaurantName, String restaurantId) {
+
         Button button = findViewById(buttonId);
+
         if (button != null) {
             button.setOnClickListener(v -> {
+
+                // Navigate to restaurant menu screen
                 Intent intent = new Intent(RestaurantListActivity.this, RestaurantMenuActivity.class);
                 intent.putExtra("RESTAURANT_NAME", restaurantName);
                 intent.putExtra("RESTAURANT_ID", restaurantId);
@@ -209,9 +263,12 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Filters restaurants based on search text
+     */
     private void filterRestaurants(String query) {
+
         if (TextUtils.isEmpty(query)) {
-            // Show all restaurants when query is empty
             showAllRestaurants();
             return;
         }
@@ -219,49 +276,68 @@ public class RestaurantListActivity extends AppCompatActivity {
         query = query.toLowerCase().trim();
 
         for (RestaurantCard restaurant : restaurantCards) {
-            boolean matches = restaurant.name.toLowerCase().contains(query) ||
+
+            boolean matches =
+                    restaurant.name.toLowerCase().contains(query) ||
                     restaurant.tags.toLowerCase().contains(query);
 
-            // Get the parent CardView
+            // Access parent CardView and update visibility
             View cardView = (View) restaurant.button.getParent().getParent();
             cardView.setVisibility(matches ? View.VISIBLE : View.GONE);
         }
     }
 
+    /**
+     * Filters restaurants by selected category
+     */
     private void filterByCategory(String category) {
+
         category = category.toLowerCase();
 
         for (RestaurantCard restaurant : restaurantCards) {
+
             boolean matches = restaurant.tags.toLowerCase().contains(category);
 
-            // Get the parent CardView
             View cardView = (View) restaurant.button.getParent().getParent();
             cardView.setVisibility(matches ? View.VISIBLE : View.GONE);
         }
     }
 
+    /**
+     * Displays all restaurants
+     */
     private void showAllRestaurants() {
+
         for (RestaurantCard restaurant : restaurantCards) {
             View cardView = (View) restaurant.button.getParent().getParent();
             cardView.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Navigates to SearchResultsActivity
+     */
     private void navigateToSearchResults(String query) {
+
         Intent intent = new Intent(RestaurantListActivity.this, SearchResultsActivity.class);
         intent.putExtra("SEARCH_QUERY", query);
         startActivity(intent);
     }
 
-    // Helper class to store restaurant card information
+    /**
+     * Helper model class for restaurant card information
+     */
     static class RestaurantCard {
+
         Button button;
         TextView nameView;
         String name;
         String id;
         String tags;
 
-        RestaurantCard(Button button, TextView nameView, String name, String id, String tags) {
+        RestaurantCard(Button button, TextView nameView,
+                       String name, String id, String tags) {
+
             this.button = button;
             this.nameView = nameView;
             this.name = name;
