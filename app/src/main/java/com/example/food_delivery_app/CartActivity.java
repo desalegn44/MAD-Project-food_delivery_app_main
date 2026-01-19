@@ -1,5 +1,6 @@
 package com.example.food_delivery_app;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,8 +23,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -34,21 +33,15 @@ public class CartActivity extends AppCompatActivity {
 
     private String orderNumber = "";
 
-    private Spinner addressSpinner;
-    private TextView selectedAddress;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_cart);
 
-
-
         cartManager = CartManager.getInstance();
         decimalFormat = new DecimalFormat("#,##0.00");
 
-        // Views
         cartItemsContainer = findViewById(R.id.cartItemsContainer);
         subtotalAmount = findViewById(R.id.subtotalAmount);
         deliveryFeeAmount = findViewById(R.id.deliveryFeeAmount);
@@ -59,22 +52,18 @@ public class CartActivity extends AppCompatActivity {
         Button placeOrderButton = findViewById(R.id.placeOrderButton);
         Button trackOrderButton = findViewById(R.id.trackOrderButton);
 
+        // Track button disabled until order is placed
+        trackOrderButton.setEnabled(false);
+
         backButton.setOnClickListener(v -> finish());
 
-        placeOrderButton.setOnClickListener(v -> placeOrder());
+        placeOrderButton.setOnClickListener(v -> showOrderConfirmation());
 
-        trackOrderButton.setOnClickListener(v -> {
-            if (orderNumber.isEmpty()) {
-                Toast.makeText(this, "Please place an order first", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            navigateToTracking();
-        });
+        trackOrderButton.setOnClickListener(v -> navigateToTracking());
 
         loadCartItems();
         updateTotals();
 
-        // Window Insets (matches XML id = main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -82,14 +71,6 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            String address = data.getStringExtra("selected_address");
-            selectedAddress.setText(address);
-        }
-    }
     private void loadCartItems() {
         cartItemsContainer.removeAllViews();
         List<CartItem> items = cartManager.getCartItems();
@@ -128,49 +109,33 @@ public class CartActivity extends AppCompatActivity {
         btnDecrease.setOnClickListener(v -> {
             if (item.getQuantity() > 1) {
                 item.decreaseQuantity();
-                loadCartItems();
-                updateTotals();
+                refreshCart();
             }
         });
 
         btnIncrease.setOnClickListener(v -> {
             item.increaseQuantity();
-            loadCartItems();
-            updateTotals();
+            refreshCart();
         });
 
         btnRemove.setOnClickListener(v -> {
             cartManager.removeItem(position);
-            loadCartItems();
-            updateTotals();
+            refreshCart();
         });
 
         return itemView;
     }
 
-    private String getEmojiForItem(String name) {
-        if (name.toLowerCase().contains("burger")) {
-            return "🍔";
-        } else if (name.toLowerCase().contains("pizza")) {
-            return "🍕";
-        } else if (name.toLowerCase().contains("cola") || name.toLowerCase().contains("coke")) {
-            return "🥤";
-        } else if (name.toLowerCase().contains("chicken")) {
-            return "🍗";
-        } else if (name.toLowerCase().contains("cheese")) {
-            return "🧀";
-        } else if (name.toLowerCase().contains("juice")) {
-            return "🧃";
-        } else if (name.toLowerCase().contains("sushi")) {
-            return "🍣";
-        } else {
-            return "🍽️";
-        }
+    private void refreshCart() {
+        loadCartItems();
+        updateTotals();
     }
 
     private void updateTotals() {
         double subtotal = cartManager.calculateSubtotal();
-        double deliveryFee = 60;
+
+        // Free delivery for orders above 500 ETB
+        double deliveryFee = subtotal >= 500 ? 0 : 60;
         double tax = subtotal * 0.15;
         double total = subtotal + deliveryFee + tax;
 
@@ -180,23 +145,35 @@ public class CartActivity extends AppCompatActivity {
         totalAmount.setText(decimalFormat.format(total) + " ETB");
     }
 
-    private void placeOrder() {
+    private void showOrderConfirmation() {
         if (cartManager.getItemCount() == 0) {
             Toast.makeText(this, "Your cart is empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Order")
+                .setMessage("Do you want to place this order?")
+                .setPositiveButton("Yes", (dialog, which) -> placeOrder())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void placeOrder() {
         orderNumber = "FD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        Toast.makeText(this, "Order #" + orderNumber + " placed successfully!", Toast.LENGTH_LONG).show();
+
+        Toast.makeText(this,
+                "Order #" + orderNumber + " placed successfully!",
+                Toast.LENGTH_LONG).show();
 
         cartManager.clearCart();
-        loadCartItems();
-        updateTotals();
+        refreshCart();
 
-        // Enable track order button
         Button trackOrderButton = findViewById(R.id.trackOrderButton);
         trackOrderButton.setEnabled(true);
-        trackOrderButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+        trackOrderButton.setBackgroundColor(
+                getResources().getColor(android.R.color.holo_green_dark)
+        );
     }
 
     private void navigateToTracking() {
@@ -208,18 +185,28 @@ public class CartActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OrderTrackingActivity.class);
         intent.putExtra("ORDER_NUMBER", orderNumber);
 
-        // Generate estimated time (current time + 15 minutes)
         SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, 15);
-        String estimatedTime = sdf.format(calendar.getTime()) + " (15min)";
-        intent.putExtra("ESTIMATED_TIME", estimatedTime);
+        intent.putExtra("ESTIMATED_TIME",
+                sdf.format(calendar.getTime()) + " (15min)");
 
-        
         intent.putExtra("DRIVER_NAME", "Abebe Kebede");
         intent.putExtra("DRIVER_PHONE", "+251911223344");
         intent.putExtra("VEHICLE", "Dodai Model T6+ [electric]");
 
         startActivity(intent);
+    }
+
+    private String getEmojiForItem(String name) {
+        name = name.toLowerCase();
+        if (name.contains("burger")) return "🍔";
+        if (name.contains("pizza")) return "🍕";
+        if (name.contains("cola") || name.contains("coke")) return "🥤";
+        if (name.contains("chicken")) return "🍗";
+        if (name.contains("cheese")) return "🧀";
+        if (name.contains("juice")) return "🧃";
+        if (name.contains("sushi")) return "🍣";
+        return "🍽️";
     }
 }
