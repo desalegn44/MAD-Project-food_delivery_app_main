@@ -1,3 +1,4 @@
+Dese, [1/19/2026 10:01 PM]
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -47,11 +48,9 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-
                 <View
                     android:layout_width="48dp"
                     android:layout_height="48dp" />
-
             </LinearLayout>
 
             <!-- Cart Items List -->
@@ -68,9 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-                <!-- Cart items will be added dynamically here -->
-
+                <!-- Cart items added dynamically -->
             </LinearLayout>
 
             <!-- Order Summary -->
@@ -86,7 +83,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 android:layout_marginBottom="24dp">
 
@@ -104,7 +101,8 @@
                         android:gravity="center_vertical"
                         android:layout_marginBottom="12dp">
 
-                        <TextView
+Dese, [1/19/2026 10:01 PM]
+<TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -190,7 +188,8 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <TextView
+Dese, [1/19/2026 10:01 PM]
+<TextView
                             android:id="@+id/totalAmount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -213,6 +212,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp" />
+
             <!-- Track Order Button -->
             <Button
                 android:id="@+id/trackOrderButton"
@@ -225,8 +225,9 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-
         </LinearLayout>
     </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
