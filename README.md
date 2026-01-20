@@ -22,8 +22,8 @@ Our Food Delivery App connects users with nearby restaurants, allowing them to b
 
 Click the link below to view the Figma design  
 
-https://www.figma.com/design/aNBCOtybPwOdYxDyTlR4lh/desalegnalemayehu11-s-team-library?node-id=3314-3&t=33pvfkqBzh3XPXrm-1
-
+[https://www.figma.com/design/aNBCOtybPwOdYxDyTlR4lh/desalegnalemayehu11-s-team-library?node-id=3314-3&t=33pvfkqBzh3XPXrm-1
+](https://www.figma.com/design/aNBCOtybPwOdYxDyTlR4lh/desalegnalemayehu11-s-team-library?node-id=3314-3&t=ycOMiO9qbA89ZvbL-1)
 
 ---
 
